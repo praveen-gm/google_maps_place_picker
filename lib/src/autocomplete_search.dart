@@ -107,7 +107,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.black54
                   : Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(4.0),
               elevation: 4.0,
               child: Row(
                 children: <Widget>[
