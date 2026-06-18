@@ -362,10 +362,8 @@ class _PlacePickerState extends State<PlacePicker> {
                     Navigator.maybePop(context);
                   }
                 },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                ),
-                color: Colors.black.withAlpha(128),
+                icon: const BackButtonIcon(),
+                color: Theme.of(context).primaryColor,
                 padding: EdgeInsets.zero)
             : Container(),
         Expanded(

@@ -101,14 +101,21 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
     return !widget.hidden
         ? ChangeNotifierProvider.value(
             value: provider,
-            child: RoundedFrame(
+            child: Container(
               height: widget.height,
               padding: const EdgeInsets.only(right: 10),
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.black54
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(4.0),
-              elevation: 4.0,
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black54
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white30
+                      : Colors.grey.shade300,
+                  width: 1,
+                ),
+              ),
               child: Row(
                 children: <Widget>[
                   SizedBox(width: 10),
