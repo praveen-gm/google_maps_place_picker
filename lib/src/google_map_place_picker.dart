@@ -124,50 +124,57 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
     provider.placeSearchingState = SearchingState.Searching;
 
-    final GeocodingResponse response =
-        await provider.geocoding.searchByLocation(
-      Location(
-          lat: provider.cameraPosition!.target.latitude,
-          lng: provider.cameraPosition!.target.longitude),
-      language: language,
-    );
-
-    if (response.errorMessage?.isNotEmpty == true ||
-        response.status == "REQUEST_DENIED") {
-      print("Camera Location Search Error: " + response.errorMessage!);
-      if (onSearchFailed != null) {
-        onSearchFailed!(response.status);
-      }
-      provider.placeSearchingState = SearchingState.Idle;
-      return;
-    }
-
-    if (usePlaceDetailSearch!) {
-      final PlacesDetailsResponse detailResponse =
-          await provider.places.getDetailsByPlaceId(
-        response.results[0].placeId,
+    try {
+      final GeocodingResponse response =
+          await provider.geocoding.searchByLocation(
+        Location(
+            lat: provider.cameraPosition!.target.latitude,
+            lng: provider.cameraPosition!.target.longitude),
         language: language,
       );
 
-      if (detailResponse.errorMessage?.isNotEmpty == true ||
-          detailResponse.status == "REQUEST_DENIED") {
-        print("Fetching details by placeId Error: " +
-            detailResponse.errorMessage!);
+      if (response.errorMessage?.isNotEmpty == true ||
+          response.status == "REQUEST_DENIED") {
+        print("Camera Location Search Error: " + response.errorMessage!);
         if (onSearchFailed != null) {
-          onSearchFailed!(detailResponse.status);
+          onSearchFailed!(response.status);
         }
         provider.placeSearchingState = SearchingState.Idle;
         return;
       }
 
-      provider.selectedPlace =
-          PickResult.fromPlaceDetailResult(detailResponse.result);
-    } else {
-      provider.selectedPlace =
-          PickResult.fromGeocodingResult(response.results[0]);
-    }
+      if (usePlaceDetailSearch!) {
+        final PlacesDetailsResponse detailResponse =
+            await provider.places.getDetailsByPlaceId(
+          response.results[0].placeId,
+          language: language,
+        );
 
-    provider.placeSearchingState = SearchingState.Idle;
+        if (detailResponse.errorMessage?.isNotEmpty == true ||
+            detailResponse.status == "REQUEST_DENIED") {
+          print("Fetching details by placeId Error: " +
+              detailResponse.errorMessage!);
+          if (onSearchFailed != null) {
+            onSearchFailed!(detailResponse.status);
+          }
+          provider.placeSearchingState = SearchingState.Idle;
+          return;
+        }
+
+        provider.selectedPlace =
+            PickResult.fromPlaceDetailResult(detailResponse.result);
+      } else {
+        provider.selectedPlace =
+            PickResult.fromGeocodingResult(response.results[0]);
+      }
+    } catch (e) {
+      print("Camera Location Search Exception: " + e.toString());
+      if (onSearchFailed != null) {
+        onSearchFailed!(e.toString());
+      }
+    } finally {
+      provider.placeSearchingState = SearchingState.Idle;
+    }
   }
 
   @override
